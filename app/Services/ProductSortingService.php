@@ -5,6 +5,7 @@ use App\Actions\SortByPrice;
 use App\Actions\SortBySalesPerView;
 use App\Interfaces\ProductSorter;
 use App\Models\Product;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -41,32 +42,27 @@ class ProductSortingService {
     public function sort($sort, $extraSort): array
     {
         try {
-            /* This was done in case database was not seeded for running the test */
-            if(Schema::hasTable('products')){
-                $dbProducts = Product::all();
-                $products = $dbProducts->toArray();
-            } else {
-                $snubProducts = json_decode(file_get_contents('../database/data/products.json'), true);
-                $products = $snubProducts['data'];
-            }
+            /* Get product catalog */
+            $snubProducts = json_decode(file_get_contents('../database/data/products.json'), true);
 
             /* Sort by price */
             if($sort === "price"){
-                $sortedProduct = $this->fetchProducts($products, $this->sortByPrice, $extraSort);
+                $sortedProduct = $this->fetchProducts($snubProducts['data'], $this->sortByPrice, $extraSort);
             }
 
             /*  Sort by sales per view */
             if($sort === "sales_to_view_ratio"){
-                $sortedProduct = $this->fetchProducts($products, $this->sortBySalesPerView);
+                $sortedProduct = $this->fetchProducts($snubProducts['data'], $this->sortBySalesPerView);
             }
 
             /* other sort can be added here as it needed */
 
             return [
-                ["status" => "success", "products" => $sortedProduct ?? $products],
+                ["status" => "success", "products" => $sortedProduct ?? $snubProducts['data']],
                 Response::HTTP_OK
             ];
         } catch (\Throwable $exception){
+            Log::error($exception);
             return [
                 ["status" => "failed", "message" => "Error sorting products."],
                 Response::HTTP_INTERNAL_SERVER_ERROR
