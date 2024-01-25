@@ -41,7 +41,7 @@ class ProductSortingService {
     public function sort($sort, $extraSort): array
     {
         try {
-            /* This was done in case database was not seeded for running the test */
+            /* This was done in case database was not createed and seeded for running the test */
             if(Schema::hasTable('products')){
                 $dbProducts = Product::all();
                 $products = $dbProducts->toArray();
