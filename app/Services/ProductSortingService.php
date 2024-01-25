@@ -4,9 +4,7 @@ namespace App\Services;
 use App\Actions\SortByPrice;
 use App\Actions\SortBySalesPerView;
 use App\Interfaces\ProductSorter;
-use App\Models\Product;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductSortingService {
